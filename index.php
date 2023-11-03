@@ -20,42 +20,38 @@
         $stmt->close();
 
         if ($result) {
-            echo '
-            <header>
-                <a href="index.php">
-                    <h1>TodoList</h1>
-                </a>
-                <div class="button-container"> 
-                    <button class="headerButton" onClick="window.location.href=\'edit-account.php\';">Edit Profile</button>
-                    <button class="headerButton" onClick="window.location.href=\'logout.php\';">Logout</button>
-                </div>
-            </header>
+            echo '<header>';
+            echo '<a href="index.php">';
+            echo '<h1>TodoList</h1>';
+            echo '</a>';
+            echo '<div class="button-container">';
+            echo '<button class="headerButton" onClick="window.location.href=\'edit-account.php\';">Edit Profile</button>';
+            echo '<button class="headerButton" onClick="window.location.href=\'logout.php\';">Logout</button>';
+            echo '</div>';
+            echo '</header>';
 
-            <div class="container">
-                <div class="content-container">
-                    <h2>Your TodoList<h2>
-                    <h4>This character "¬" can not be entered:<h4>
-                        <form action="list-manager.php" method="post">
-                            <input class="inputField" type="text" name="newEntry" placeholder="Entry" maxlength="80"
-                            pattern="[^¬]*" required title="* Please enter a valid entry">
-                            <input class="button" type="submit" name="addEntry" value="Add">
-                        </form>
-                </div>
-            </div>
-        
-            <div class="table-container">
-                <h3>Current Todos</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="300">Task</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
+            echo '<div class="container">';
             
-                    <tbody>
-                    ';
+            echo '<div class="content-container">';
+            echo '<h2>Your TodoList<h2>';    
+            echo '<h4>This character "¬" can not be entered:<h4>';
+            echo '<form action="list-manager.php" method="post">';
+            echo    '<input class="inputField" type="text" name="newEntry" placeholder="Entry" maxlength="80" pattern="[^¬]*" required title="* Please enter a valid entry">';
+            echo    '<input class="button" type="submit" name="addEntry" value="Add">';
+            echo '</form>';
+            echo '</div>';
+
+            echo '<div class="table-container">';
+            echo '<h3>Current Todos</h3>';
+
+            echo '<table>';
+            echo '<thead>';
+            echo    '<tr>';
+            echo    '<th width="300">Task</th> <th></th> <th></th>'; 
+            echo    '</tr>';
+            echo '</thead>';
+
+            echo '<tbody>';
 
             $stmt = $conn->prepare("SELECT list FROM users_lists WHERE user_id = ?");
             $stmt->bind_param("i", $_SESSION['user-id']);
