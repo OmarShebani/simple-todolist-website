@@ -19,48 +19,11 @@
         $stmt->fetch();
         $stmt->close();
 
-        if ($result) {
-            echo '<header>';
-            echo '<a href="index.php">';
-            echo '<h1>TodoList</h1>';
-            echo '</a>';
-            echo '<div class="button-container">';
-            echo '<button class="headerButton" onClick="window.location.href=\'edit-account.php\';">Edit Profile</button>';
-            echo '<button class="headerButton" onClick="window.location.href=\'logout.php\';">Logout</button>';
-            echo '</div>';
-            echo '</header>';
+        if (!$result) {
+            require 'logout.php';
+        }
 
-            echo '<div class="container">';
-            
-            echo '<div class="content-container">';
-            echo '<h2>Your TodoList<h2>';    
-            echo '<h4>This character "¬" can not be entered:<h4>';
-            echo '<form action="list-manager.php" method="post">';
-            echo    '<input class="inputField" type="text" name="newEntry" placeholder="Entry" maxlength="80" pattern="[^¬]*" required title="* Please enter a valid entry">';
-            echo    '<input class="button" type="submit" name="addEntry" value="Add">';
-            echo '</form>';
-            echo '</div>';
-
-            echo '<div class="table-container">';
-            echo '<h3>Current Todos</h3>';
-
-            echo '<table>';
-            echo '<thead>';
-            echo    '<tr>';
-            echo    '<th width="300">Task</th> <th></th> <th></th>'; 
-            echo    '</tr>';
-            echo '</thead>';
-
-            echo '<tbody>';
-
-            $stmt = $conn->prepare("SELECT list FROM users_lists WHERE user_id = ?");
-            $stmt->bind_param("i", $_SESSION['user-id']);
-            $stmt->execute();
-            $stmt->bind_result($currentEntries);
-            $stmt->fetch();
-            $stmt->close();
-        ?>
-
+    ?>
     <script>
         function switch_visibility(button) {
             let entry = button.parentElement.previousElementSibling.querySelector('.visible');
@@ -74,35 +37,69 @@
             entry.setAttribute('hidden', 'hidden');
         }
     </script>
-
     <?php
-            if ($currentEntries) {
-                $entryNum = 1;
-                foreach (explode("¬", $currentEntries) as $entry) {
-                    echo '<tr>';
 
-                    echo '<td> <div class="visible">'. $entryNum .' - '. $entry .'</div>
-                  <input class="hidden inputField" type="text" name="editField" placeholder="Edit entry" value="'. $entry .'" maxlength="80" hidden> </td>';
+        echo '<header>';
+        echo '<a href="index.php">';
+        echo '<h1>TodoList</h1>';
+        echo '</a>';
+        echo '<div class="button-container">';
+        echo '<button class="headerButton" onClick="window.location.href=\'edit-account.php\';">Edit Profile</button>';
+        echo '<button class="headerButton" onClick="window.location.href=\'logout.php\';">Logout</button>';
+        echo '</div>';
+        echo '</header>';
 
-                    echo '<td> <button class="visible" onClick="switch_visibility(this);">Edit</button>
-                  <button class="hidden" hidden onClick="window.location.href=\'list-manager.php?editedEntry=\' + encodeURIComponent(this.parentElement.previousElementSibling.querySelector(\'.inputField\').value) + \'&entryNum='. $entryNum .'\';">
-                  Done</button> </td>';
+        echo '<div id="table-container" class="container">';
+        
+        echo '<h2>Your TodoList<h2>';    
+        echo '<h4>This character "¬" can not be entered:<h4>';
+        echo '<form action="list-manager.php" method="post">';
+        echo    '<input class="inputField" type="text" name="newEntry" placeholder="Entry" maxlength="80" pattern="[^¬]*" required title="* Please enter a valid entry">';
+        echo    '<input class="button" type="submit" name="addEntry" value="Add">';
+        echo '</form>';
 
-                    echo '<td> <a href="list-manager.php?delEntryNum=' . $entryNum . '">Delete</a> </td>';
+        echo '<h3>Current Todos</h3>';
 
-                    echo '</tr>';
-                    $entryNum += 1;
-                }
+        echo '<table>';
+        echo '<thead>';
+        echo    '<tr>';
+        echo    '<th width="300">Task</th> <th></th> <th></th>'; 
+        echo    '</tr>';
+        echo '</thead>';
+
+        echo '<tbody>';
+
+        $stmt = $conn->prepare("SELECT list FROM users_lists WHERE user_id = ?");
+        $stmt->bind_param("i", $_SESSION['user-id']);
+        $stmt->execute();
+        $stmt->bind_result($currentEntries);
+        $stmt->fetch();
+        $stmt->close();
+    
+        if ($currentEntries) {
+            $entryNum = 1;
+            foreach (explode("¬", $currentEntries) as $entry) {
+                echo '<tr>';
+
+                echo '<td> <div class="visible">'. $entryNum .' - '. $entry .'</div>
+              <input class="hidden inputField" type="text" name="editField" placeholder="Edit entry" value="'. $entry .'" maxlength="80" hidden> </td>';
+
+                echo '<td> <button class="visible" onClick="switch_visibility(this);">Edit</button>
+                <button class="hidden" hidden onClick="window.location.href=\'list-manager.php?editedEntry=\' + encodeURIComponent(this.parentElement.previousElementSibling.querySelector(\'.inputField\').value) + \'&entryNum='. $entryNum .'\';">
+                Done</button> </td>';
+
+                echo '<td> <a href="list-manager.php?delEntryNum=' . $entryNum . '">Delete</a> </td>';
+
+                echo '</tr>';
+                $entryNum += 1;
             }
-
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
-
-        } else {
-            require 'logout.php';
         }
+
+        echo '</tbody>';
+        echo '</table>';
+        echo '</div>';
     }
+
 
     if (!isset($_SESSION['user-id'])) {
         $username = $loginErr = "";

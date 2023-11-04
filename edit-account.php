@@ -10,20 +10,32 @@
         <a href="index.php">
             <h1>TodoList</h1>
         </a>
+
         <div class="button-container">
             <button class="headerButton" onClick="window.location.href='index.php';">Back</button>
             <button class="headerButton" onClick="window.location.href='logout.php';">Logout</button>
-
         </div>
     </header>
 
     <?php
     session_start();
+    require 'connect-database.php';
+    $conn->query("USE todo_list");
+
+    $stmt = $conn->prepare('SELECT user_id FROM users WHERE user_id = ?');
+    $stmt->bind_param("i", $_SESSION['user-id']);
+    $stmt->execute();
+    $stmt->bind_result($result);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!$result) {
+        require 'logout.php';
+    }
+
     $oldPassword = $newPassword = $repeatedPassword = $usernameErr = $oldPasswordErr = $repeatedPasswordErr =  "";
     $nameChangeSuccess = $passwordChangeSuccess = "";
 
-    require 'connect-database.php';
-    $conn->query("USE todo_list");
     $stmt = $conn->prepare("SELECT username FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $_SESSION['user-id']);
     $stmt->execute();
@@ -109,7 +121,7 @@
     }
     ?>
 
-    <div class="container content-container">
+    <div class="container">
         <form method="post">
             <h1>Manage Your Account</h1>
             <h3>Your Username:</h3>
@@ -117,12 +129,14 @@
             <input class="inputField" type="text" name="username" placeholder="Username" maxlength="20"
                 value="<?php echo $oldUsername;?>" pattern="[a-zA-Z ]+" title="* Please enter a valid username"
                 required>
-            <div class="error"> <?php echo $usernameErr;?> </div>
+            <div class="error">
+                <?php echo $usernameErr; ?> 
+            </div>
             <br><br>
 
             <input class="button" type="submit" name="submit" value="Change Username">
             <div class="successMessage">
-                <?php echo $nameChangeSuccess;?>
+                <?php echo $nameChangeSuccess; ?>
             </div>
         </form>
 
@@ -130,24 +144,26 @@
             <h3>Your Old Password:</h3><br>
             <input class="inputField" type="password" name="oldPassword" placeholder="Old Password" maxlength="32"
                 pattern="[a-zA-Z0-9+-=*&$^%@ ]{8,32}" title="* Incorrect password, please try again" required>
-            <div class="error"> <?php echo $oldPasswordErr;?> </div>
+            <div class="error">
+                <?php echo $oldPasswordErr; ?> 
+            </div>
             <br><br>
 
             <h3>Your New Password:</h3>
-            <h5>The password has to be at least 8 characters and can only contain [a-z, A-Z, 0-9, + -, =, *, &, £, $,
-                @].</h5>
+            <h5>The password has to be at least 8 characters and can only contain [a-z, A-Z, 0-9, + -, =, *, &, £, $, @].</h5>
             <input class="inputField" type="password" name="newPassword" placeholder="New Password" maxlength="32"
                 pattern="[a-zA-Z0-9+-=*&$^%@ ]{8,32}" title="* Please enter a valid password" required>
             <br><br>
 
             <input class="inputField" type="password" name="repeatedPassword" placeholder="Repeat Password"
                 maxlength="32" title="* Please repeat the new password" required>
-            <div class="error"> <?php echo $repeatedPasswordErr;?>
+            <div class="error"> 
+                <?php echo $repeatedPasswordErr; ?>
             </div><br><br>
 
             <input class="button" type="submit" name="submit" value="Change Password">
             <div class="successMessage">
-                <?php echo $passwordChangeSuccess;?>
+                <?php echo $passwordChangeSuccess; ?>
             </div> <br><br>
         </form>
 

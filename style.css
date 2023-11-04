@@ -2,36 +2,23 @@ body {
     font-family: Arial;
     margin: 0 auto;
     background-color: #c9f4ffc4;
-    
 }
 
 .container{
     background-color: #b1dfeb;
-    /* width: 1000px; */
-    /* min-height: 800px; */
     border-radius: 7px;
     padding: 5px;
-    display: flex; /* Use flexbox for centering */
-    flex-direction: column; /* Stack contents vertically */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    /* position: absolute;
-    top: 56%;
-    left: 50%; */
-    /* transform: translate(-50%, -50%); */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.table-container {
+#table-container {
+    align-items: center;
     text-align: center;
-    /* flex: 1; Takes up all available horizontal space */
-    padding: 10px;
-}
-
-.content-container {
     flex: 1;
-    padding: 10px;
 }
-
 
 header {
     background-color: rgb(0, 157, 185);
@@ -39,8 +26,8 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    width: 100%;
-    height: 9%
+    width: 99%;
+    height: 8%;
 }
 
 header a {
@@ -70,6 +57,7 @@ a:hover {
     font-weight: bold;
     border: none;
 }
+
 .button-container {
     display: flex;
     gap: 10px;
@@ -125,6 +113,7 @@ a:hover {
     margin-top: 5%;
     font-weight: bold;
 }
+
 #buttonDelAccount:hover {
     background-color: #ff7a7a;
     color: #000;

@@ -11,6 +11,10 @@
 
     <?php
     session_start();
+    if (isset($_SESSION['user-id'])) {
+        require 'logout.php';
+    }
+
     $username = $newPassword = $repeatedPassword = $usernameErr = $repeatedPasswordErr =  "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -59,7 +63,7 @@
     }
     ?>
 
-<div class="container content-container">
+<div class="container">
     <form method="post">
         <h1>Register</h1>
         <h3>Your Username:</h3>
