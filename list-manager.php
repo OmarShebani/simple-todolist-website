@@ -2,6 +2,13 @@
     require 'connect-database.php';
     $conn->query("USE todo_list");
     session_start();
+
+    function input_sanitization($input){
+        $input = trim($input);
+        $input = stripcslashes($input);
+        $input = htmlspecialchars($input);
+        return $input;
+    }
     
     $stmt = $conn->prepare("SELECT list FROM users_lists WHERE user_id = ?");
     $stmt->bind_param("i", $_SESSION['user-id']);
@@ -11,7 +18,7 @@
     $stmt->close();
 
     if (isset($_POST['newEntry'])) {
-        $newEntry = $_POST['newEntry'];
+        $newEntry = input_sanitization($_POST['newEntry']);
         
         if ($currentEntries) {
             $currentEntries .= '¬' . $newEntry;
@@ -23,13 +30,10 @@
         $stmt->bind_param("si", $currentEntries, $_SESSION['user-id']);
         $stmt->execute();
         $stmt->close();
-
-        header("Location:index.php");
-        exit();
     }
 
     if (isset($_GET['editedEntry']) && isset($_GET['entryNum'])) {
-        $editedEntry = urldecode($_GET['editedEntry']);
+        $editedEntry = input_sanitization(urldecode($_GET['editedEntry']));
         $entryNum = (int)$_GET['entryNum'];
                 
         $entries_array = explode("¬", $currentEntries);
@@ -40,9 +44,6 @@
         $stmt->bind_param("si", $currentEntries, $_SESSION['user-id']);
         $stmt->execute();
         $stmt->close();
-
-        header("Location:index.php");
-        exit();
     }
 
     if (isset($_GET['delEntryNum'])) {
@@ -56,8 +57,8 @@
         $stmt->bind_param("si", $currentEntries, $_SESSION['user-id']);
         $stmt->execute();
         $stmt->close();
-
-        header("Location:index.php");
-        exit();
     }
+
+    header("Location:index.php");
+    exit();
 ?>

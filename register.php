@@ -21,7 +21,7 @@
         require 'connect-database.php';
         $conn->query("USE todo_list");
 
-        $username = $_POST["username"];
+        $username = trim($_POST["username"]);
         $newPassword =  $_POST["newPassword"];
         $repeatedPassword =  $_POST["repeatedPassword"];
 

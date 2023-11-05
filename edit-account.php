@@ -44,7 +44,7 @@
     $stmt->close();
 
     if (isset($_POST['username'])) {
-        $username = $_POST["username"];
+        $username = trim($_POST["username"]);
 
         $stmt = $conn->prepare("SELECT username FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
