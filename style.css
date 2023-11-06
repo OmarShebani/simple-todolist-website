@@ -91,16 +91,6 @@ a:hover {
     color: #000;
 }
 
-.error {
-    color: red; 
-    font-size: 0.8em;
-}
-
-.successMessage {
-    color: green;
-    font-size: 1em;
-}
-
 #buttonDelAccount {
     background-color: rgb(204, 0, 0);
     border: none;
@@ -121,4 +111,14 @@ a:hover {
 
 h3, h2, h1{
     font-weight: bold;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+}
+
+.successMessage {
+    color: green;
+    font-size: 1em;
 }

@@ -33,9 +33,6 @@
         require 'logout.php';
     }
 
-    $oldPassword = $newPassword = $repeatedPassword = $usernameErr = $oldPasswordErr = $repeatedPasswordErr =  "";
-    $nameChangeSuccess = $passwordChangeSuccess = "";
-
     $stmt = $conn->prepare("SELECT username FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $_SESSION['user-id']);
     $stmt->execute();
@@ -55,16 +52,15 @@
 
 
         if ($result) {
-            $usernameErr = "* The username has been used";
+            $_SESSION['usernameErr']= "* The username has been used";
         } else {
             $stmt = $conn->prepare("UPDATE users SET username = ? WHERE user_id = ?");
             $stmt->bind_param("si", $username, $_SESSION['user-id']);
             $stmt->execute();
             $stmt->close();
 
-            $usernameErr = "";
             $oldUsername = $username;
-            $nameChangeSuccess = " The username has been changed";
+            $_SESSION['nameChangeSuccess'] = "The username has been changed";
         }
 
         header("Location:edit-account.php");
@@ -85,25 +81,21 @@
 
 
         if (!password_verify($oldPassword, $hashedPassword)) {
-            $oldPasswordErr = "* Incorrect password, please try again";
-        } else {
-            $oldPasswordErr = "";
+            $_SESSION['oldPasswordErr'] = "* Incorrect password, please try again";
         }
 
         if ($repeatedPassword !== $newPassword) {
-            $repeatedPasswordErr = "* The passwords you entered don't match, please try again";
-        } else {
-            $repeatedPasswordErr = "";
+            $_SESSION['repeatedPasswordErr'] = "* The passwords you entered don't match, please try again";
         }
 
-        if (!$oldPasswordErr && !$repeatedPasswordErr) {
+        if (!isset($_SESSION['oldPasswordErr']) && !isset($_SESSION['repeatedPasswordErr'])) {
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
             $stmt = $conn->prepare("UPDATE users SET password = ? WHERE user_id = ?");
             $stmt->bind_param("si", $hashedPassword, $_SESSION['user-id']);
             $stmt->execute();
             $stmt->close();
 
-            $passwordChangeSuccess = " The password has been changed";
+            $_SESSION['passwordChangeSuccess'] = "The password has been changed";
         }
 
         header("Location:edit-account.php");
@@ -129,24 +121,39 @@
             <input class="inputField" type="text" name="username" placeholder="Username" maxlength="20"
                 value="<?php echo $oldUsername;?>" pattern="[a-zA-Z ]+" title="* Please enter a valid username"
                 required>
-            <div class="error">
-                <?php echo $usernameErr; ?> 
-            </div>
+            <span class="error">
+            <?php
+                if (isset($_SESSION['usernameErr'])) {
+                    echo $_SESSION['usernameErr'];
+                    unset($_SESSION['usernameErr']);
+                }
+            ?>
+            </span>
             <br><br>
 
             <input class="button" type="submit" name="submit" value="Change Username">
-            <div class="successMessage">
-                <?php echo $nameChangeSuccess; ?>
-            </div>
+            <span class="successMessage">
+            <?php
+                if (isset($_SESSION['nameChangeSuccess'])) {
+                    echo $_SESSION['nameChangeSuccess'];
+                    unset($_SESSION['nameChangeSuccess']); // Clear the message
+                }
+            ?>
+            </span>
         </form>
 
         <form method="post">
             <h3>Your Old Password:</h3><br>
             <input class="inputField" type="password" name="oldPassword" placeholder="Old Password" maxlength="32"
                 pattern="[a-zA-Z0-9+-=*&$^%@ ]{8,32}" title="* Incorrect password, please try again" required>
-            <div class="error">
-                <?php echo $oldPasswordErr; ?> 
-            </div>
+            <span class="error">
+            <?php
+                if (isset($_SESSION['oldPasswordErr'])) {
+                    echo $_SESSION['oldPasswordErr'];
+                    unset($_SESSION['oldPasswordErr']);
+                }
+            ?>
+            </span>
             <br><br>
 
             <h3>Your New Password:</h3>
@@ -157,14 +164,26 @@
 
             <input class="inputField" type="password" name="repeatedPassword" placeholder="Repeat Password"
                 maxlength="32" title="* Please repeat the new password" required>
-            <div class="error"> 
-                <?php echo $repeatedPasswordErr; ?>
-            </div><br><br>
+            <span class="error">
+            <?php
+                if (isset($_SESSION['repeatedPasswordErr'])) {
+                    echo $_SESSION['repeatedPasswordErr'];
+                    unset($_SESSION['repeatedPasswordErr']);
+                }
+            ?>
+            </span>
+            <br><br>
 
             <input class="button" type="submit" name="submit" value="Change Password">
-            <div class="successMessage">
-                <?php echo $passwordChangeSuccess; ?>
-            </div> <br><br>
+            <span class="successMessage">
+            <?php
+                if (isset($_SESSION['passwordChangeSuccess'])) {
+                    echo $_SESSION['passwordChangeSuccess'];
+                    unset($_SESSION['passwordChangeSuccess']);
+                }
+            ?>
+            </span>
+            <br><br>
         </form>
 
         <form method="post">

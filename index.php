@@ -122,7 +122,7 @@
         echo    '<input class="inputField" type="password" name="password" placeholder="Password" maxlength="32"
                 pattern="[a-zA-Z0-9+-=*&$^%@ ]{8,32}" title="* Invalid password, please try again" required>';
 
-        echo    '<br ><input class="button" type="submit" name="loginButton" value="Login">';
+        echo    '<br> <input class="button" type="submit" name="loginButton" value="Login">';
         echo    '<span class="error"> '. $loginErr .'</span>';
         echo '</form>';
 

@@ -15,13 +15,11 @@
         require 'logout.php';
     }
 
-    $username = $newPassword = $repeatedPassword = $usernameErr = $repeatedPasswordErr =  "";
-
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         require 'connect-database.php';
         $conn->query("USE todo_list");
 
-        $username = trim($_POST["username"]);
+        $username = $_SESSION['username'] = trim($_POST["username"]);
         $newPassword =  $_POST["newPassword"];
         $repeatedPassword =  $_POST["repeatedPassword"];
 
@@ -33,20 +31,16 @@
         $stmt->close();
 
         if ($result > 0) {
-            $usernameErr = "* The username has been used";
-        } else {
-            $usernameErr = "";
+            $_SESSION['usernameErr'] = "* The username has been used";
         }
 
         if (empty($repeatedPassword)) {
-            $repeatedPasswordErr = "* Please repeat the new password";
+            $_SESSION['repeatedPasswordErr'] = "* Please repeat the new password";
         } elseif ($repeatedPassword !== $newPassword) {
-            $repeatedPasswordErr = "* The passwords you entered don't match, please try again";
-        } else {
-            $repeatedPasswordErr = "";
+            $_SESSION['repeatedPasswordErr'] = "* The passwords you entered don't match, please try again";
         }
 
-        if (!$usernameErr && !$repeatedPasswordErr) {
+        if (!isset($_SESSION['usernameErr']) && !isset($_SESSION['repeatedPasswordErr'])) {
             $hashed_password = password_hash($newPassword, PASSWORD_BCRYPT);
             $stmt = $conn->prepare('INSERT INTO users(username, password) VALUES(?, ?)');
             $stmt->bind_param("ss", $username, $hashed_password);
@@ -69,8 +63,22 @@
         <h3>Your Username:</h3>
         <h5>Only letters and white space are allowed.</h5>
         <input class="inputField" type="text" name="username" placeholder="Username" maxlength="20" 
-        value="<?php echo $username;?>" pattern="[a-zA-Z ]+" title="* Please enter a valid username" required>
-        <div class="error"> <?php echo $usernameErr;?> </div><br><br>
+        value="<?php
+            if (isset($_SESSION['username'])) {
+                echo $_SESSION['username'];
+                unset($_SESSION['username']);
+            }
+                ?>"
+        pattern="[a-zA-Z ]+" title="* Please enter a valid username" required>
+        <span class="error"> 
+        <?php
+            if (isset($_SESSION['usernameErr'])) {
+                echo $_SESSION['usernameErr'];
+                unset($_SESSION['usernameErr']);
+            }
+        ?>
+        </span>
+        <br><br>
         
         <h3>Your New Password:</h3>
         <h5>The password has to be at least 8 characters and can only contain [a-z, A-Z, 0-9, + -, =, *, &, £, $, @].</h5>
@@ -79,7 +87,15 @@
         <br><br>
 
         <input class="inputField" type="password" name="repeatedPassword" placeholder="Repeat Password" maxlength="32">
-        <div class="error"> <?php echo $repeatedPasswordErr;?> </div><br><br>
+        <span class="error">
+        <?php
+            if (isset($_SESSION['repeatedPasswordErr'])) {
+                echo $_SESSION['repeatedPasswordErr'];
+                unset($_SESSION['repeatedPasswordErr']);
+            }
+        ?>
+        </span>
+        <br><br>
 
         <input class="button" type="submit" name="submit" value="Create Account">
         <input class="button" type="button" name="cancel" value="Cancel" onClick="window.location.href='index.php';">
