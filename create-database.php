@@ -1,34 +1,29 @@
 <?php
 require 'connect-database.php';
-if (!$conn->query("SHOW DATABASES LIKE 'todo_list'")) {
+if ($conn->query("SHOW DATABASES LIKE 'todo_list'")->num_rows === 0) {
 
-    $queries = "CREATE DATABASE todo_list;
-                USE todo_list;
-                
-                CREATE TABLE users(
+    $conn->query("CREATE DATABASE todo_list");
+    $conn->query("USE todo_list");
+
+    $conn->query("CREATE TABLE users(
                     user_id INT AUTO_INCREMENT,
-                    username VARCHAR(50) NOT NULL,
-                    password VARCHAR(250) NOT NULL,
+                    username VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+                    password VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
                     PRIMARY KEY(user_id)
-                );
-                
-                CREATE TABLE users_lists(
+                )");
+
+    $conn->query("CREATE TABLE users_lists(
                     user_id INT,
-                    list TEXT NULL,
+                    list TEXT CHARACTER SET utf8 COLLATE utf8_bin NULL,
                     PRIMARY KEY(user_id),
                     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
-                );
-                
-                DELIMITER //
-                CREATE TRIGGER UsersAfterInsert
-                AFTER INSERT ON users
-                FOR EACH ROW
-                BEGIN
-                    INSERT INTO users_lists (user_id, list) VALUES (NEW.user_id, '');
-                END;
-                //
-                DELIMITER ;";
+                )");
 
-    $conn->multi_query($queries);
-}                                   // doesn't work :-(
+    $conn->query("CREATE TRIGGER UsersAfterInsert
+                    AFTER INSERT ON users
+                    FOR EACH ROW
+                    BEGIN
+                        INSERT INTO users_lists (user_id, list) VALUES (NEW.user_id, '');
+                    END");
+}
 ?>
